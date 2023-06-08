@@ -1,4 +1,10 @@
 export default [
+  { heading: 'Blog' },
+  {
+    title: 'Tags',
+    icon: { icon: 'tabler-file' },
+    to: 'admin-tags-list',
+  },
   { heading: 'Apps & Pages' },
   {
     title: 'Email',

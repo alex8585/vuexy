@@ -51,4 +51,4 @@ dist-ssr
 
 # iconify dist files
 resources/ts/@iconify/*.js
-tags
+/tags
