@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { Options } from '@core/types'
+
+import useCrud from '@/composables/useCrud'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 import type { UserProperties } from '@/@fake-db/types'
 import { paginationMeta } from '@/@fake-db/utils'
@@ -6,7 +9,9 @@ import AddItemDrawer from '@/views/admin/tags/list/AddNewTagDrawer.vue'
 import EditItemDrawer from '@/views/admin/tags/list/EditTagDrawer.vue'
 import { useTagListStore } from '@/views/admin/tags/useTagListStore'
 
-import type { Options } from '@core/types'
+
+const  baseUrl = '/api/v1/tags';
+const { addItem, deleteItem, updateItem } = useCrud(baseUrl)
 
 // 👉 Store
 const itemsStore = useTagListStore()
@@ -31,50 +36,38 @@ const headers = [
   { title: 'Actions', key: 'actions', sortable: false },
 ]
 
-// 👉 Fetching users
-const fetchItems = () => {
-  //console.log(sortBy.value)
-  itemsStore.fetch({
-    filter: { 's': searchQuery.value },
-    page:options.value.page,
-    perPage: options.value.itemsPerPage,
-    direction:options.value.sortBy[0]?.order,
-    sortBy: options.value.sortBy[0]?.key,
-  }).then(response => {
-    items.value = response.data.data
-    totalItems.value = response.data.metaData.rowsNumber
-    //totalPage.value = response.data.metaData.pages
-    //options.value.page = response.data.metaData.page
-  }).catch(error => {
-    console.error(error)
-  })
+async function fetchItems() {
+    await itemsStore.fetch({
+        filter: { 's': searchQuery.value },
+        page:options.value.page,
+        perPage: options.value.itemsPerPage,
+        direction:options.value.sortBy[0]?.order,
+        sortBy: options.value.sortBy[0]?.key,
+    })
+    items.value = itemsStore.items
+    totalItems.value = itemsStore.meta.rowsNumber
 }
 
 watchEffect(fetchItems)
-
-
 
 const onEditButtonClick = (data: UserProperties) => {
     editRow.value = data.raw
     isEditItemVisible.value = true
 }
 
-const addItemSubmit = (data: UserProperties) => {
-  itemsStore.addItem(data).then(response => {
-    fetchItems()
-  })
+const addItemSubmit = async (data: UserProperties) => {
+  await addItem(data)
+  fetchItems()
 }
 
-const editItemSubmit = (data: UserProperties) => {
-  itemsStore.updateItem(data).then(response => {
-    fetchItems()
-  })
+const editItemSubmit = async (data: UserProperties) => {
+  await updateItem(data)
+  fetchItems()
 }
 
-const deleteUser = (id: number) => {
-  itemsStore.deleteItem(id).then(response => {
-    fetchItems()
-  })
+const deleteUser = async (id: number) => {
+  await deleteItem(id)
+  fetchItems()
 }
 
 const perPageChange = (perPage: int) => {
@@ -152,7 +145,6 @@ const updateTableOprions = (e) => {
 
           <VDivider />
 
-          <!--  v-model:sort-by="sortBy"           v-model:page="options.page" SECTION datatable -->
           <VDataTableServer
             v-model:items-per-page="options.itemsPerPage"
             :items="items"
@@ -177,8 +169,6 @@ const updateTableOprions = (e) => {
               </IconBtn>
 
             </template>
-
-
 
             <!-- pagination -->
             <template #bottom>

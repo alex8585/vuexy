@@ -5,46 +5,63 @@ import type { UserParams } from '@/views/apps/user/types'
 import axios from '@axios'
 
 let baseUrl = '/api/v1/tags' 
+
+interface Tag {
+  id?: number;
+  name?: string;
+}
+
+interface Tags {
+  data: Tag[];
+  meta: {
+    rowsNumber: number;
+    page: number;
+    rowsPerPage: number;
+  };
+}
+interface State {
+  _allTags: Tag[];
+  tags: Tags;
+  tag: Tag;
+  _loading: boolean;
+}
+
 export const useTagListStore = defineStore('TagListStore', {
+  id: "tags",
+  state: () =>
+    <State>{
+      _allTags: [],
+      tags: {
+        data: [],
+        meta: {
+          rowsPerPage: 5,
+          page: 1,
+          rowsNumber: 0,
+        },
+      },
+      tag: {},
+      _loading: false,
+    },
+
+  getters: {
+    items: (state) => state.tags.data,
+    meta: (state) => state.tags.meta,
+    loading: (state) => state._loading,
+    allTags: (state) => state._allTags,
+  },
+
   actions: {
 
-    fetch(params: UserParams) { 
+   async fetch(params: UserParams) { 
       console.log(params);
-      let users = axios.get(baseUrl, { params }) 
-      return users;
-    },
 
-
-    addItem(data: UserProperties) {
-      return new Promise((resolve, reject) => {
-        axios.post(baseUrl, {
-            ...data,
-        }).then(response => resolve(response))
-          .catch(error => reject(error))
-      })
-    },
-
-    updateItem(data: UserProperties) {
-      return new Promise((resolve, reject) => {
-        axios.put(`${baseUrl}/${data.id}`, {
-            name:data.name,
-        }).then(response => resolve(response))
-          .catch(error => reject(error))
-      })
-    },
-
-    deleteItem(id: number) {
-      return new Promise((resolve, reject) => {
-        axios.delete(`${baseUrl}/${id}`).then(response => resolve(response)).catch(error => reject(error))
-    })
+      this._loading = true;
+      let res = await axios.get(baseUrl, { params }) 
+      this._loading = false;
+      this.tags.data = res.data.data;
+      this.tags.meta = res.data.metaData;
 
     },
-
-    fetchItem(id: number) {
-      return new Promise<AxiosResponse>((resolve, reject) => {
-        axios.get(`/apps/users/${id}`).then(response => resolve(response)).catch(error => reject(error))
-      })
-    }
 
   },
 })
