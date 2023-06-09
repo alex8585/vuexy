@@ -16,12 +16,12 @@ const { addItem, deleteItem, updateItem } = useCrud(baseUrl)
 // 👉 Store
 const itemsStore = useTagListStore()
 const searchQuery = ref('')
-const totalItems = ref(0)
-const items = ref<UserProperties[]>([])
 const editRow = ref({})
+const deletingRow = ref({})
 
 const isAddItemVisible = ref(false)
 const isEditItemVisible = ref(false)
+const isConfirmDeleteVisible = ref(false)
 
 const options = ref<Options>({
   page: 1,
@@ -44,31 +44,10 @@ async function fetchItems() {
         direction:options.value.sortBy[0]?.order,
         sortBy: options.value.sortBy[0]?.key,
     })
-    items.value = itemsStore.items
-    totalItems.value = itemsStore.meta.rowsNumber
 }
 
 watchEffect(fetchItems)
 
-const onEditButtonClick = (data: UserProperties) => {
-    editRow.value = data.raw
-    isEditItemVisible.value = true
-}
-
-const addItemSubmit = async (data: UserProperties) => {
-  await addItem(data)
-  fetchItems()
-}
-
-const editItemSubmit = async (data: UserProperties) => {
-  await updateItem(data)
-  fetchItems()
-}
-
-const deleteUser = async (id: number) => {
-  await deleteItem(id)
-  fetchItems()
-}
 
 const perPageChange = (perPage: int) => {
     options.value.itemsPerPage = parseInt(perPage, 10)
@@ -91,6 +70,33 @@ const updateTableOprions = (e) => {
         } 
         options.value.sortBy = sortBy         
     }
+}
+
+const onEditButtonClick = (data: UserProperties) => {
+    editRow.value = data.raw
+    isEditItemVisible.value = true
+}
+
+const addItemSubmit = async (data: UserProperties) => {
+  await addItem(data)
+  fetchItems()
+}
+
+const editItemSubmit = async (data: UserProperties) => {
+  await updateItem(data)
+  fetchItems()
+}
+
+const deleteDialog = async (item: any) => {
+   isConfirmDeleteVisible.value = true
+   deletingRow.value = item.raw
+}
+
+const onDeleteItem = async (confirm: boolean) => {
+  if(confirm) {
+      await deleteItem(deletingRow.value.id)
+      fetchItems()
+  }
 }
 
 </script>
@@ -147,8 +153,8 @@ const updateTableOprions = (e) => {
 
           <VDataTableServer
             v-model:items-per-page="options.itemsPerPage"
-            :items="items"
-            :items-length="totalItems"
+            :items="itemsStore.items"
+            :items-length="itemsStore.rowsNumber"
             :headers="headers"
             class="text-no-wrap"
             @update:options="updateTableOprions($event)"
@@ -158,7 +164,7 @@ const updateTableOprions = (e) => {
 
             <!-- Actions -->
             <template #item.actions="{ item }">
-              <IconBtn @click="deleteUser(item.raw.id)">
+              <IconBtn @click="deleteDialog(item)">
                 <VIcon icon="tabler-trash" />
               </IconBtn>
 
@@ -168,6 +174,7 @@ const updateTableOprions = (e) => {
                 icon="tabler-edit" />
               </IconBtn>
 
+
             </template>
 
             <!-- pagination -->
@@ -175,13 +182,13 @@ const updateTableOprions = (e) => {
               <VDivider />
               <div class="d-flex align-center justify-sm-space-between justify-center flex-wrap gap-3 pa-5 pt-3">
                 <p class="text-sm text-disabled mb-0">
-                  {{ paginationMeta(options, totalItems) }}
+                  {{ paginationMeta(options, itemsStore.rowsNumber) }}
                 </p>
 
                 <VPagination
                   v-model="options.page"
-                  :length="Math.ceil(totalItems / options.itemsPerPage)"
-                  :total-visible="$vuetify.display.xs ? 1 : Math.ceil(totalItems / options.itemsPerPage)"
+                  :length="Math.ceil(itemsStore.rowsNumber / options.itemsPerPage)"
+                  :total-visible="$vuetify.display.xs ? 1 : Math.ceil( itemsStore.rowsNumber / options.itemsPerPage)"
                 >
                   <template #prev="slotProps">
                     <VBtn
@@ -222,6 +229,13 @@ const updateTableOprions = (e) => {
           v-model:isDrawerOpen="isEditItemVisible"
           @submit="editItemSubmit"
         />
+        <ConfirmDialog
+            v-model:isDialogVisible="isConfirmDeleteVisible"
+            :confirmation-question="'Are you sure you want to delete item: \'' + deletingRow.name + '\'?' "
+            :show-on-cancel="false"
+            :show-on-confirm="false"
+            @confirm="onDeleteItem($event)"
+         />
       </vcol>
     </vrow>
   </section>

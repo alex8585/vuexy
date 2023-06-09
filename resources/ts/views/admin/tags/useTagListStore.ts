@@ -48,6 +48,7 @@ export const useTagListStore = defineStore('TagListStore', {
     meta: (state) => state.tags.meta,
     loading: (state) => state._loading,
     allTags: (state) => state._allTags,
+    rowsNumber: (state) => state.tags.meta.rowsNumber,
   },
 
   actions: {

@@ -2,10 +2,12 @@
 interface Props {
   confirmationQuestion: string
   isDialogVisible: boolean
-  confirmTitle: string
-  confirmMsg: string
-  cancelTitle: string
-  cancelMsg: string
+  confirmTitle?: string
+  confirmMsg?: string
+  cancelTitle?: string
+  cancelMsg?: string
+  showOnCancel?: boolean
+  showOnConfirm?: boolean
 }
 
 interface Emit {
@@ -13,7 +15,11 @@ interface Emit {
   (e: 'confirm', value: boolean): void
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  showOnCancel: true,
+  showOnConfirm: true
+
+})
 
 const emit = defineEmits<Emit>()
 
@@ -27,13 +33,17 @@ const updateModelValue = (val: boolean) => {
 const onConfirmation = () => {
   emit('confirm', true)
   updateModelValue(false)
-  unsubscribed.value = true
+  if(props.showOnConfirm) {
+    unsubscribed.value = true
+  }
 }
 
 const onCancel = () => {
   emit('confirm', false)
   emit('update:isDialogVisible', false)
-  cancelled.value = true
+  if(props.showOnCancel) {
+     cancelled.value = true
+  }
 }
 </script>
 
