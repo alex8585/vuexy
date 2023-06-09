@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Facades\TransHelp;
 
 class StoreCategoryRequest extends FormRequest
 {
@@ -24,11 +23,9 @@ class StoreCategoryRequest extends FormRequest
      */
     public function rules()
     {
-        $fields =[
+        return [
           'name' => 'required|max:70',
         ];
 
-        $validatorData = TransHelp::getValidatorFields($fields);
-        return $validatorData;
     }
 }

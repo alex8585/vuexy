@@ -13,11 +13,11 @@ interface Emit {
 
 interface Props {
   isDrawerOpen: boolean
-  row: Object
 }
 
 
-const formTitle = "Edit Tag"
+const formTitle = "Add Category"
+
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
@@ -26,17 +26,6 @@ const isFormValid = ref(false)
 const refForm = ref<VForm>()
 
 const name = ref('')
-const id = ref('')
-
-const setRow = () => {
-    if(props.isDrawerOpen) {
-        name.value = props.row.name
-        id.value = props.row.id
-    }
-}
-
-watchEffect(setRow)
-
 
 // 👉 drawer close
 const closeNavigationDrawer = () => {
@@ -56,7 +45,6 @@ const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
       emit('submit', {
-        id: id.value,
         name:name.value
       })
       emit('update:isDrawerOpen', false)
@@ -100,7 +88,7 @@ const onSubmit = () => {
                 <AppTextField
                   v-model="name"
                   :rules="[requiredValidator]"
-                  label="Tag name"
+                  label="Category name"
                 />
               </VCol>
 

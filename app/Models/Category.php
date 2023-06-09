@@ -12,30 +12,12 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $sortFields = ['id', 'name'];
 
-    public $translatedAttributes = ['name'];
+    protected $sortFields = ['name'];
 
     public function posts()
     {
         return $this->hasMany(Post::class);
     }
 
-    public function scopeSort($query)
-    {
-        parent::scopeSort($query);
-
-        $direction = request()->boolean('descending', true) ? 'ASC' : 'DESC';
-        $order = request()->get('orderBy', 'id');
-
-        if ($order == 'name') {
-            $query->join('category_translations', function ($join) {
-                $loc = app()->getLocale();
-                $join->on('categories.id', 'category_translations.category_id');
-                $join->on('locale', DB::raw("'${loc}'"));
-            });
-            $query->select('categories.*', 'category_translations.name as t_name');
-            $query->orderBy('t_name', $direction);
-        }
-    }
 }

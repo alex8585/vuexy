@@ -5,24 +5,25 @@ import useCrud from '@/composables/useCrud'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 import type { UserProperties } from '@/@fake-db/types'
 import { paginationMeta } from '@/@fake-db/utils'
-import AddItemDrawer from '@/views/admin/tags/list/AddNewTagDrawer.vue'
-import EditItemDrawer from '@/views/admin/tags/list/EditTagDrawer.vue'
-import { useTagListStore } from '@/views/admin/tags/useTagListStore'
+import AddItemDrawer from '@/views/admin/posts/list/AddNewPostDrawer.vue'
+import EditItemDrawer from '@/views/admin/posts/list/EditPostDrawer.vue'
+import { usePostListStore } from '@/views/admin/posts/usePostListStore'
 
-const itemsTitle ="Tags"
-const addNewItemBtnTitle = "Add New Tag"
-const  baseUrl = '/api/v1/tags';
+const itemsTitle ="Posts"
+const addNewItemBtnTitle = "Add New Post"
+const  baseUrl = '/api/v1/posts';
 
 const headers = [
-  { title: 'Name', key: 'name' },
+  { title: 'Title', key: 'title' },
+  { title: 'Category', key: 'category.name' },
   { title: 'Actions', key: 'actions', sortable: false },
 ]
 
 
 const { addItem, deleteItem, updateItem } = useCrud(baseUrl)
 
-const itemsStore = useTagListStore(baseUrl)
-
+const itemsStore = usePostListStore(baseUrl)
+console.log(itemsStore)
 
 const searchQuery = ref('')
 const editRow = ref({})
@@ -233,7 +234,7 @@ const onDeleteItem = async (confirm: boolean) => {
         />
         <ConfirmDialog
             v-model:isDialogVisible="isConfirmDeleteVisible"
-            :confirmation-question="'Are you sure you want to delete item: \'' + deletingRow.name + '\'?' "
+            :confirmation-question="'Are you sure you want to delete item: \'' + deletingRow.title + '\'?' "
             :show-on-cancel="false"
             :show-on-confirm="false"
             @confirm="onDeleteItem($event)"

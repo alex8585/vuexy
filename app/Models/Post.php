@@ -56,38 +56,6 @@ class Post extends Model
         return $this->belongsToMany(Tag::class)->withTimestamps();
     }
 
-    public static function queryFilter($query = self::class)
-    {
-        $filter = request()->query('filter', null);
-        $tagsIds = isset($filter['tags']) ? explode(',', $filter['tags']) : null;
-
-        return QueryBuilder::for($query)->allowedFilters([
-          AllowedFilter::exact('id'),
-          AllowedFilter::exact('category', 'category_id'),
-          AllowedFilter::callback(
-              'tags',
-              fn ($query) => $query->whereHas('tags', function ($query) use (
-                  $tagsIds
-              ) {
-                  $query->whereIn('tags.id', $tagsIds);
-              })
-          ),
-          AllowedFilter::callback(
-              'title',
-              fn ($query, $title) => $query->whereHas('translations', function ($query) use ($title) {
-                  $query->where('locale', app()->getLocale());
-                  $query->where('title', 'LIKE', "%{$title}%");
-              })
-          ),
-          AllowedFilter::callback(
-              'description',
-              fn ($query, $description) => $query->whereHas('translations', function ($query) use ($description) {
-                  $query->where('locale', app()->getLocale());
-                  $query->where('description', 'LIKE', "%{$description}%");
-              })
-          ),
-        ]);
-    }
 
     public function prunable()
     {
@@ -103,25 +71,5 @@ class Post extends Model
           },
         ]);
     }
-    /* public function scopeWithTranslation(Builder $query) { */
 
-    /* } */
-
-    public function scopeSort($query)
-    {
-        parent::scopeSort($query);
-
-        $direction = request()->boolean('descending', true) ? 'ASC' : 'DESC';
-        $order = request()->get('orderBy', 'id');
-
-        if ($order == 'title') {
-            $query->join('post_translations', function ($join) {
-                $loc = app()->getLocale();
-                $join->on('posts.id', 'post_translations.post_id');
-                $join->on('locale', DB::raw("'${loc}'"));
-            });
-            $query->select('posts.*', 'post_translations.title as t_title');
-            $query->orderBy('t_title', $direction);
-        }
-    }
 }

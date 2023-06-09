@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Facades\TransHelp;
 
 class StorePostRequest extends FormRequest
 {
@@ -26,15 +25,9 @@ class StorePostRequest extends FormRequest
      */
     public function rules()
     {
-        $fields =[
-          'title' => 'required|max:70',
+       return [
+         'title' => 'required|max:70',
           'description' => 'required',
-        ];
-
-        $validatorData = TransHelp::getValidatorFields($fields);
-
-        return [
-            ...$validatorData,
           'tags' => ['array'],
           'category.value' => [
             'bail',

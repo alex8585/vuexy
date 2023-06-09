@@ -39,17 +39,4 @@ class TagRepository extends BaseRepository
         ]);
     }
 
-    /* public function queryFilter_old() */
-    /* { */
-    /*     return QueryBuilder::for($this->model)->allowedFilters([ */
-    /*         AllowedFilter::exact('id'), */
-    /*         AllowedFilter::callback( */
-    /*             'name', */
-    /*             fn ($query, $name) => $query->whereHas('translations', function ($query) use ($name) { */
-    /*                 $query->where('locale', app()->getLocale()); */
-    /*                 $query->where('name', 'LIKE', "%{$name}%"); */
-    /*             }) */
-    /*         ), */
-    /*     ]); */
-    /* } */
 }

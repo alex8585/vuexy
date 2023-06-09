@@ -16,8 +16,7 @@ interface Props {
   row: Object
 }
 
-
-const formTitle = "Edit Tag"
+const formTitle = "Edit Category"
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
@@ -100,7 +99,7 @@ const onSubmit = () => {
                 <AppTextField
                   v-model="name"
                   :rules="[requiredValidator]"
-                  label="Tag name"
+                  label="Category name"
                 />
               </VCol>
 

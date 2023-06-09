@@ -41,8 +41,7 @@ class PostRepository extends BaseRepository
 
     public function create(array $attributes, $tags = []): Model
     {
-        $data = $this->formatLocalesFields($attributes);
-        $post =  $this->model->create($data);
+        $post =  $this->model->create($attributes);
 
         if ($tags) {
             if (isset($tags[0]['value'])) {
@@ -57,8 +56,7 @@ class PostRepository extends BaseRepository
 
     public function update(Model $post, array $attributes, $tags = []): bool
     {
-        $data = $this->formatLocalesFields($attributes);
-        $result = $post->update($data);
+        $result = $post->update($attributes);
         if ($tags) {
             if (isset($tags[0]['value'])) {
                 $tagsIds = collect($tags)->pluck('value');
@@ -78,17 +76,16 @@ class PostRepository extends BaseRepository
             ->sort();
     }
 
-    public function queryFilter(): QueryBuilder
+    public function queryFilter()
     {
-        return QueryBuilder::for($this->model)->allowedFilters([
-            AllowedFilter::exact('id'),
-            AllowedFilter::callback(
-                'name',
-                fn ($query, $name) => $query->whereHas('translations', function ($query) use ($name) {
-                    $query->where('locale', app()->getLocale());
-                    $query->where('name', 'LIKE', "%{$name}%");
-                })
-            ),
-        ]);
+        $s = request('filter.s');
+
+        return QueryBuilder::for($this->model)
+            ->when($s, function ($query) use($s) {
+                    $query->where('title', 'like', "%$s%")
+                      ->orWhere('description', 'like', "%$s%");
+        });
+                                              
+                                              
     }
 }

@@ -13,11 +13,11 @@ interface Emit {
 
 interface Props {
   isDrawerOpen: boolean
-  row: Object
 }
 
 
-const formTitle = "Edit Tag"
+const formTitle = "Add Post"
+
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
@@ -25,18 +25,8 @@ const emit = defineEmits<Emit>()
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
 
-const name = ref('')
-const id = ref('')
-
-const setRow = () => {
-    if(props.isDrawerOpen) {
-        name.value = props.row.name
-        id.value = props.row.id
-    }
-}
-
-watchEffect(setRow)
-
+const title = ref('')
+const description = ref('')
 
 // 👉 drawer close
 const closeNavigationDrawer = () => {
@@ -56,8 +46,8 @@ const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
       emit('submit', {
-        id: id.value,
-        name:name.value
+        title:title.value,
+        description:description.value
       })
       emit('update:isDrawerOpen', false)
       nextTick(() => {
@@ -95,14 +85,25 @@ const onSubmit = () => {
             @submit.prevent="onSubmit"
           >
             <VRow>
-              <!-- 👉 Full name -->
+
               <VCol cols="12">
                 <AppTextField
-                  v-model="name"
+                  v-model="title"
                   :rules="[requiredValidator]"
-                  label="Tag name"
+                  label="Title"
                 />
               </VCol>
+
+              <VCol cols="12">
+                <AppTextField
+                  v-model="description"
+                  :rules="[requiredValidator]"
+                  label="Description"
+                />
+              </VCol>
+
+
+
 
               <!-- 👉 Submit and Cancel -->
               <VCol cols="12">

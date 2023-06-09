@@ -4,13 +4,13 @@ import type { UserProperties } from "@/@fake-db/types";
 import type { UserParams } from "@/views/apps/user/types";
 import axios from "@axios";
 
-interface Tag {
+interface Category {
   id?: number;
   name?: string;
 }
 
-interface Tags {
-  data: Tag[];
+interface Categories {
+  data: Category[];
   meta: {
     rowsNumber: number;
     page: number;
@@ -18,15 +18,15 @@ interface Tags {
   };
 }
 interface State {
-  _allTags: Tag[];
-  tags: Tags;
-  tag: Tag;
+  _allCategories: Category[];
+  categories: Categories;
+  category: Category;
   _loading: boolean;
 }
 
-export const useTagListStore = function (baseUrl: string) {
-  return defineStore("TagListStore", {
-    id: "tags",
+export const usePostListStore = function (baseUrl: string) {
+  return defineStore("PostListStore", {
+    id: "posts",
     state: () =>
       <State>{
         _loading: false,

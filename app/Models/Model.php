@@ -17,8 +17,8 @@ abstract class Model extends Eloquent
 
     public function scopeSort($query)
     {
-        $direction = request()->boolean('descending', true) ? 'ASC' : 'DESC';
-        $order = request()->get('orderBy', 'id');
+        $direction = request()->get('direction', 'asc');
+        $order = request()->get('sortBy', 'id');
 
         $isIn = in_array($order, $this->sortFields);
 

@@ -31,15 +31,7 @@ class CategoryRepository extends BaseRepository
     public function queryFilter()
     {
         return QueryBuilder::for($this->model)->allowedFilters([
-            AllowedFilter::exact('id'),
-            AllowedFilter::callback(
-                'name',
-                fn ($query, $name) => $query->whereHas('translations', function ($query) use ($name) {
-                    $query->where('locale', app()->getLocale());
-                    $query->where('name', 'LIKE', "%{$name}%");
-                    /* $query->where(DB::raw('LOWER(category_translations.name)') , 'LIKE', '%' . strtolower($name) . '%'); */
-                })
-            ),
+          AllowedFilter::partial('s', 'name'),
         ]);
     }
 }

@@ -16,8 +16,7 @@ interface Props {
   row: Object
 }
 
-
-const formTitle = "Edit Tag"
+const formTitle = "Edit Post"
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emit>()
@@ -25,12 +24,14 @@ const emit = defineEmits<Emit>()
 const isFormValid = ref(false)
 const refForm = ref<VForm>()
 
-const name = ref('')
+const title = ref('')
+const description = ref('')
 const id = ref('')
 
 const setRow = () => {
     if(props.isDrawerOpen) {
-        name.value = props.row.name
+        title.value = props.row.title
+        description.value = props.row.description
         id.value = props.row.id
     }
 }
@@ -57,7 +58,8 @@ const onSubmit = () => {
     if (valid) {
       emit('submit', {
         id: id.value,
-        name:name.value
+        title:title.value,
+        description:description.value
       })
       emit('update:isDrawerOpen', false)
       nextTick(() => {
@@ -95,12 +97,20 @@ const onSubmit = () => {
             @submit.prevent="onSubmit"
           >
             <VRow>
-              <!-- 👉 Full name -->
+
               <VCol cols="12">
                 <AppTextField
-                  v-model="name"
+                  v-model="title"
                   :rules="[requiredValidator]"
-                  label="Tag name"
+                  label="Title"
+                />
+              </VCol>
+
+              <VCol cols="12">
+                <AppTextField
+                  v-model="description"
+                  :rules="[requiredValidator]"
+                  label="Description"
                 />
               </VCol>
 

@@ -5,6 +5,16 @@ export default [
     icon: { icon: 'tabler-file' },
     to: 'admin-tags-list',
   },
+  {
+    title: 'Categories',
+    icon: { icon: 'tabler-file' },
+    to: 'admin-categories-list',
+  },
+  {
+    title: 'Posts',
+    icon: { icon: 'tabler-file' },
+    to: 'admin-posts-list',
+  },
   { heading: 'Apps & Pages' },
   {
     title: 'Email',

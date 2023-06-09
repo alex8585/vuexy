@@ -5,13 +5,13 @@ import useCrud from '@/composables/useCrud'
 import { VDataTableServer } from 'vuetify/labs/VDataTable'
 import type { UserProperties } from '@/@fake-db/types'
 import { paginationMeta } from '@/@fake-db/utils'
-import AddItemDrawer from '@/views/admin/tags/list/AddNewTagDrawer.vue'
-import EditItemDrawer from '@/views/admin/tags/list/EditTagDrawer.vue'
-import { useTagListStore } from '@/views/admin/tags/useTagListStore'
+import AddItemDrawer from '@/views/admin/categories/list/AddNewCategoryDrawer.vue'
+import EditItemDrawer from '@/views/admin/categories/list/EditCategoryDrawer.vue'
+import { useCategoriesListStore } from '@/views/admin/categories/useCategoriesListStore'
 
-const itemsTitle ="Tags"
-const addNewItemBtnTitle = "Add New Tag"
-const  baseUrl = '/api/v1/tags';
+const itemsTitle ="Categories"
+const addNewItemBtnTitle = "Add New Category"
+const  baseUrl = '/api/v1/categories';
 
 const headers = [
   { title: 'Name', key: 'name' },
@@ -21,9 +21,7 @@ const headers = [
 
 const { addItem, deleteItem, updateItem } = useCrud(baseUrl)
 
-const itemsStore = useTagListStore(baseUrl)
-
-
+const itemsStore = useCategoriesListStore(baseUrl)
 const searchQuery = ref('')
 const editRow = ref({})
 const deletingRow = ref({})
@@ -39,6 +37,7 @@ const options = ref<Options>({
   groupBy: [],
   search: undefined,
 })
+
 
 async function fetchItems() {
     await itemsStore.fetch({

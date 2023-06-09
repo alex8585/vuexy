@@ -27,8 +27,8 @@ class PostResource extends JsonResource
         return [
           'id' => $this->id,
           'user_id' => $this->user_id,
-          /* 'title' => $this->title, */
-          /* 'description' => $this->description, */
+          'title' => $this->title,
+          'description' => $this->description,
           'created_at_str' => $created_at,
           'updated_at_str' => $updated_at,
           'created_at' => Tc::toTimestamp($created_at),
