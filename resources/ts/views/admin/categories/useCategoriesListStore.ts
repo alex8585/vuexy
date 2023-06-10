@@ -24,7 +24,7 @@ interface State {
   _loading: boolean;
 }
 
-export const useCategoriesListStore = function (baseUrl: string) {
+export const useCategoriesListStore = function (baseUrl: string = '') {
   return defineStore("CategoryListStore", {
     id: "categories",
     state: () =>
@@ -46,17 +46,25 @@ export const useCategoriesListStore = function (baseUrl: string) {
       loading: (state) => state._loading,
       allTags: (state) => state._allTags,
       rowsNumber: (state) => state._meta.rowsNumber,
+      allItems: (state) => state._allItems
     },
 
     actions: {
       async fetch(params: UserParams) {
         console.log(params);
-
         this._loading = true;
         let res = await axios.get(baseUrl, { params });
 
         this._items = res.data.data;
         this._meta = res.data.metaData;
+        this._loading = false;
+      },
+
+      async getAllItems() {
+        const allUrl = `${baseUrl}?perPage=-1`;
+        this._loading = true;
+        const res = await axios.get(allUrl);
+        this._allItems = res.data.data;
         this._loading = false;
       },
     },

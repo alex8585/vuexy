@@ -171,10 +171,8 @@ const onDeleteItem = async (confirm: boolean) => {
                 <VIcon icon="tabler-trash" />
               </IconBtn>
 
-              <IconBtn>
-                <VIcon 
-                @click="onEditButtonClick(item)"
-                icon="tabler-edit" />
+              <IconBtn @click="onEditButtonClick(item)">
+                <VIcon icon="tabler-edit" />
               </IconBtn>
 
 

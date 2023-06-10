@@ -24,7 +24,7 @@ interface State {
   _loading: boolean;
 }
 
-export const useTagListStore = function (baseUrl: string) {
+export const useTagListStore = function (baseUrl: string = '') {
   return defineStore("TagListStore", {
     id: "tags",
     state: () =>
@@ -46,6 +46,7 @@ export const useTagListStore = function (baseUrl: string) {
       loading: (state) => state._loading,
       allTags: (state) => state._allTags,
       rowsNumber: (state) => state._meta.rowsNumber,
+      allItems: (state) => state._allItems
     },
 
     actions: {
@@ -54,9 +55,16 @@ export const useTagListStore = function (baseUrl: string) {
 
         this._loading = true;
         let res = await axios.get(baseUrl, { params });
-
         this._items = res.data.data;
         this._meta = res.data.metaData;
+        this._loading = false;
+      },
+
+      async getAllItems() {
+        const allUrl = `${baseUrl}?perPage=-1`;
+        this._loading = true;
+        const res = await axios.get(allUrl);
+        this._allItems = res.data.data;
         this._loading = false;
       },
     },

@@ -26,17 +26,30 @@ class CategoryCollection extends ResourceCollection
             $can_update = $user->can('update', $cat);
             $can_delete = $user->can('delete', $cat);
         }
+
+        $meta = [
+            'rowsPerPage' => -1,
+            'rowsNumber' => 0,
+            'pages' => 0,
+            'page' => 0,
+        ];
+
+        if($this->resource instanceof LengthAwarePaginator) {
+            $meta = [
+                'rowsNumber' => $this->total(),
+                'rowsPerPage' => $this->perPage(),
+                'pages' => $this->lastPage(),
+                'page' => $this->currentPage(),
+                'can_create' => $can_create,
+                'can_update' =>$can_update,
+                'can_delete' =>$can_delete,
+            ];
+        }
+    
         return [
-      'data' => $this->collection,
-      'metaData' => [
-        'rowsNumber' => $this->total(),
-        'rowsPerPage' => $this->perPage(),
-        'page' => $this->currentPage(),
-        'can_create' =>$can_create,
-        'can_update' =>$can_update,
-        'can_delete' =>$can_delete,
-      ],
-    ];
+          'data' => $this->collection,
+          'metaData' => $meta,
+        ];
     }
 
     public function withResponse($request, $response)

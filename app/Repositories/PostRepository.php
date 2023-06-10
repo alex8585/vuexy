@@ -57,14 +57,13 @@ class PostRepository extends BaseRepository
     public function update(Model $post, array $attributes, $tags = []): bool
     {
         $result = $post->update($attributes);
-        if ($tags) {
-            if (isset($tags[0]['value'])) {
-                $tagsIds = collect($tags)->pluck('value');
-            } else {
-                $tagsIds = collect($tags);
-            }
-            $post->tags()->sync($tagsIds);
+
+        if (isset($tags[0]['value'])) {
+            $tagsIds = collect($tags)->pluck('value');
+        } else {
+            $tagsIds = collect($tags);
         }
+        $post->tags()->sync($tagsIds);
 
         return $result;
     }

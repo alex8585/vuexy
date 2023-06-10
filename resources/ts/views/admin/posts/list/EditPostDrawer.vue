@@ -1,75 +1,119 @@
 <script setup lang="ts">
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type { VForm } from 'vuetify/components/VForm'
+import type { VForm } from "vuetify/components/VForm";
 
-import type { UserProperties } from '@/@fake-db/types'
-import { emailValidator, requiredValidator } from '@validators'
+import type { UserProperties } from "@/@fake-db/types";
+import { emailValidator, requiredValidator } from "@validators";
+
+import { useCategoriesListStore } from "@/views/admin/categories/useCategoriesListStore";
+import { useTagListStore } from "@/views/admin/tags/useTagListStore";
 
 interface Emit {
-  (e: 'update:isDrawerOpen', value: boolean): void
-  (e: 'submit', value: UserProperties): void
+  (e: "update:isDrawerOpen", value: boolean): void;
+  (e: "submit", value: UserProperties): void;
 }
 
 interface Props {
-  isDrawerOpen: boolean
-  row: Object
+  isDrawerOpen: boolean;
+  row: Object;
 }
 
-const formTitle = "Edit Post"
+const formTitle = "Edit Post";
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emit>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emit>();
 
-const isFormValid = ref(false)
-const refForm = ref<VForm>()
+const isFormValid = ref(false);
+const refForm = ref<VForm>();
 
-const title = ref('')
-const description = ref('')
-const id = ref('')
+const catsStore = useCategoriesListStore();
+const tagsStore = useTagListStore();
+
+const form = ref({
+  id: null,
+  tags: [],
+  title: null,
+  description: null,
+  category: null
+});
+
+let tagOptions = computed(() => {
+  let options = [];
+  for (const tag of [...tagsStore.allItems] as Array<TagType>) {
+    let option = {
+      title: tag.name,
+      value: tag.id,
+    };
+    options.push(option);
+  }
+  return options;
+});
+
+let catsOptions = computed(() => {
+  let options = [];
+  options.push({ title: "Default", value: null });
+  for (const cat of [...catsStore.allItems] as Array<TagType>) {
+    let option = {
+      title: cat.name,
+      value: cat.id,
+    };
+    options.push(option);
+  }
+  return options;
+});
 
 const setRow = () => {
-    if(props.isDrawerOpen) {
-        title.value = props.row.title
-        description.value = props.row.description
-        id.value = props.row.id
-    }
-}
+  if(!props.isDrawerOpen) {
+    return
+  }
 
-watchEffect(setRow)
+  console.log(props.row)
+  let tags = []
+  if (props.row.tags) {
+      for (const tag of props.row.tags as Array<TagType>) {
+        let option = {
+          title: tag.name,
+          value: tag.id,
+        };
+        tags.push(option);
 
+      }
+  }
+  let category = props.row.category.id
+  form.value = { ...props.row, tags,category }
+};
+
+watch([props], setRow)
+
+//watchEffect(setRow);
 
 // 👉 drawer close
 const closeNavigationDrawer = () => {
-  emit('update:isDrawerOpen', false)
+  emit("update:isDrawerOpen", false);
 
   nextTick(() => {
-    refForm.value?.reset()
-    refForm.value?.resetValidation()
-  })
-}
+    refForm.value?.reset();
+    refForm.value?.resetValidation();
+  });
+};
 
 const handleDrawerModelValueUpdate = (val: boolean) => {
-  emit('update:isDrawerOpen', val)
-}
+  emit("update:isDrawerOpen", val);
+};
 
 const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
-      emit('submit', {
-        id: id.value,
-        title:title.value,
-        description:description.value
-      })
-      emit('update:isDrawerOpen', false)
+      emit("submit", form.value);
+      emit("update:isDrawerOpen", false);
       nextTick(() => {
-        refForm.value?.reset()
-        refForm.value?.resetValidation()
-      })
+        refForm.value?.reset();
+        refForm.value?.resetValidation();
+      });
     }
-  })
-}
-
+  });
+};
 </script>
 
 <template>
@@ -91,16 +135,11 @@ const onSubmit = () => {
       <VCard flat>
         <VCardText>
           <!-- 👉 Form -->
-          <VForm
-            ref="refForm"
-            v-model="isFormValid"
-            @submit.prevent="onSubmit"
-          >
+          <VForm ref="refForm" v-model="isFormValid" @submit.prevent="onSubmit">
             <VRow>
-
               <VCol cols="12">
                 <AppTextField
-                  v-model="title"
+                  v-model="form.title"
                   :rules="[requiredValidator]"
                   label="Title"
                 />
@@ -108,20 +147,37 @@ const onSubmit = () => {
 
               <VCol cols="12">
                 <AppTextField
-                  v-model="description"
+                  v-model="form.description"
                   :rules="[requiredValidator]"
                   label="Description"
                 />
               </VCol>
 
+              <VCol cols="12">
+                <AppSelect
+                  name="category"
+                  label="Category"
+                  v-model="form.category"
+                  :items="catsOptions"
+                  chips
+                />
+              </VCol>
+
+              <VCol cols="12">
+                <AppSelect
+                  name="tags"
+                  label="Tags"
+                  v-model="form.tags"
+                  :items="tagOptions"
+                  multiple
+                  chips
+                />
+              </VCol>
+
+
               <!-- 👉 Submit and Cancel -->
               <VCol cols="12">
-                <VBtn
-                  type="submit"
-                  class="me-3"
-                >
-                  Submit
-                </VBtn>
+                <VBtn type="submit" class="me-3"> Submit </VBtn>
                 <VBtn
                   type="reset"
                   variant="tonal"

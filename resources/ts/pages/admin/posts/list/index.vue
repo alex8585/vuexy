@@ -9,6 +9,10 @@ import AddItemDrawer from '@/views/admin/posts/list/AddNewPostDrawer.vue'
 import EditItemDrawer from '@/views/admin/posts/list/EditPostDrawer.vue'
 import { usePostListStore } from '@/views/admin/posts/usePostListStore'
 
+import { useCategoriesListStore } from '@/views/admin/categories/useCategoriesListStore'
+import { useTagListStore } from '@/views/admin/tags/useTagListStore'
+
+
 const itemsTitle ="Posts"
 const addNewItemBtnTitle = "Add New Post"
 const  baseUrl = '/api/v1/posts';
@@ -23,7 +27,10 @@ const headers = [
 const { addItem, deleteItem, updateItem } = useCrud(baseUrl)
 
 const itemsStore = usePostListStore(baseUrl)
-console.log(itemsStore)
+const catsStore = useCategoriesListStore('/api/v1/categories')
+const tagsStore = useTagListStore('/api/v1/tags')
+
+
 
 const searchQuery = ref('')
 const editRow = ref({})
@@ -40,6 +47,17 @@ const options = ref<Options>({
   groupBy: [],
   search: undefined,
 })
+
+
+
+
+onMounted(async () => {
+  nextTick(async () => {
+    await tagsStore.getAllItems();
+    await catsStore.getAllItems();
+  });
+});
+
 
 async function fetchItems() {
     await itemsStore.fetch({
@@ -111,7 +129,6 @@ const onDeleteItem = async (confirm: boolean) => {
 
       <VCol cols="12">
         <VCard :title="itemsTitle">
-
           <VDivider />
 
           <VCardText class="d-flex flex-wrap py-4 gap-4">
@@ -172,10 +189,8 @@ const onDeleteItem = async (confirm: boolean) => {
                 <VIcon icon="tabler-trash" />
               </IconBtn>
 
-              <IconBtn>
-                <VIcon 
-                @click="onEditButtonClick(item)"
-                icon="tabler-edit" />
+              <IconBtn @click="onEditButtonClick(item)">
+                <VIcon icon="tabler-edit" />
               </IconBtn>
 
 
@@ -228,7 +243,7 @@ const onDeleteItem = async (confirm: boolean) => {
           @submit="addItemSubmit"
         />
         <EditItemDrawer
-          v-model:row="editRow"
+          :row="editRow"
           v-model:isDrawerOpen="isEditItemVisible"
           @submit="editItemSubmit"
         />

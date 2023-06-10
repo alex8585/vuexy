@@ -53,8 +53,10 @@ class PostController extends Controller
     public function store(StorePostRequest $request)
     {
         $validated = $request->safe();
-        $validated['category_id'] = $request->safe()->category['value'] ?? null;
+
+        $validated['category_id'] = $validated['category'] ?? null;
         $validated['user_id'] = 1;
+
         $tags = $request->safe()->tags ?? [];
         
         $post = $this->postRepo->create($validated->all(), $tags);
@@ -85,10 +87,10 @@ class PostController extends Controller
      */
     public function update(StorePostRequest $request, Post $post)
     {
-        $validated = $request->safe()->merge([
-          'category_id' => $request->safe()->category['value'] ?? null,
-          'user_id' => 1,
-        ]);
+        $validated = $request->safe();
+
+        $validated['category_id'] = $validated['category'] ?? null;
+        $validated['user_id'] = 1;
 
         $tags = $request->safe()->tags ?? null;
 

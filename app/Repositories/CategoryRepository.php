@@ -20,6 +20,10 @@ class CategoryRepository extends BaseRepository
         parent::__construct(Category::class);
     }
 
+    public function all() {
+        $all = $this->baseQuery()->get();
+        return new CategoryCollection($all);
+    }
 
     public function paginate($perPage): CategoryCollection
     {
