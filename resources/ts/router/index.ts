@@ -12,16 +12,20 @@ const router = createRouter({
     {
       path: '/',
       redirect: to => {
-        const userData = JSON.parse(localStorage.getItem('userData') || '{}')
-        const userRole = (userData && userData.role) ? userData.role : null
+        return { name: 'dashboards-analytics' }
+      }
 
-        if (userRole === 'admin')
-          return { name: 'dashboards-analytics' }
-        if (userRole === 'client')
-          return { name: 'access-control' }
+      // redirect: to => {
+      //   const userData = JSON.parse(localStorage.getItem('userData') || '{}')
+      //   const userRole = (userData && userData.role) ? userData.role : null
 
-        return { name: 'login', query: to.query }
-      },
+      //   if (userRole === 'admin')
+      //     return { name: 'dashboards-analytics' }
+      //   if (userRole === 'client')
+      //     return { name: 'access-control' }
+
+      //   return { name: 'login', query: to.query }
+      // },
     },
     {
       path: '/pages/user-profile',
@@ -60,17 +64,15 @@ router.beforeEach(to => {
   return next()
 
   */
-
-  if (canNavigate(to)) {
-    if (to.meta.redirectIfLoggedIn && isLoggedIn)
-      return '/'
-  }
-  else {
-    if (isLoggedIn)
-      return { name: 'not-authorized' }
-    else
-      return { name: 'login', query: { to: to.name !== 'index' ? to.fullPath : undefined } }
-  }
+    //console.log(to.path);
+    //console.log(isLoggedIn);
+    if(!isLoggedIn) {
+        if(to.path != '/login' && to.path != '/register') {
+            return { name: 'login' }
+        }
+    }else if(to.path == '/login' || to.path == '/register') {
+        return { name: 'dashboards-analytics' }
+    }
 })
 
 export default router

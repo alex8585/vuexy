@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\v1\CategoryController;
 use App\Http\Controllers\Api\v1\TagController;
 use App\Http\Controllers\Api\v1\UserController;
 use App\Http\Controllers\Api\v1\PostController;
-use App\Http\Controllers\AaaController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +29,16 @@ Route::prefix('v1')->group(function() {
   Route::prefix((function() {
       return '';
     })())->group(function() {
+
+        Route::group(['prefix' => 'auth'], function () {
+            Route::post('login', [AuthController::class, 'login']);
+            Route::post('register', [AuthController::class, 'register']);
+
+            Route::group(['middleware' => 'auth:sanctum'], function() {
+              Route::get('logout', [AuthController::class, 'logout']);
+              Route::get('user', [AuthController::class, 'user']);
+            });
+        });
 
         //'auth:api'
         Route::middleware(['api', ])->group(function () {

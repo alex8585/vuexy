@@ -22,6 +22,8 @@ const email = ref('john@example.com')
 const password = ref('john@VUEXY#123')
 const privacyPolicies = ref(true)
 
+
+
 // Router
 const route = useRoute()
 const router = useRouter()
@@ -31,35 +33,56 @@ const ability = useAppAbility()
 
 // Form Errors
 const errors = ref<Record<string, string | undefined>>({
-  email: undefined,
-  password: undefined,
+  email: null,
+  password: null,
 })
 
+onMounted(() => {
+//   localStorage.removeItem('userAbilities')
+//   localStorage.removeItem('accessToken')
+})
+
+const emailServerError = ()  => {
+    let error = errors.value.email?.[0];
+    return error ? error : true
+}
+
 const register = () => {
-  axios.post<RegisterResponse>('/auth/register', {
-    username: username.value,
+  axios.post<RegisterResponse>('/api/v1/auth/register', {
+    name: username.value,
     email: email.value,
     password: password.value,
+    c_password: password.value,
   })
     .then(r => {
-      const { accessToken, userData, userAbilities } = r.data
+        //console.log('response >>>', r);
+        let respErrors = r?.data?.errors
+        if(respErrors) {
+            errors.value = respErrors
+            refVForm.value?.validate().then(() => {
+                errors.value.email = null
+                errors.value.password = null
+            })
 
-      localStorage.setItem('userAbilities', JSON.stringify(userAbilities))
-      ability.update(userAbilities)
+        } else {
+         //   errors.value.email = null
+          //  errors.value.password = null
+            let token = r?.data?.accessToken
+            let userData = r?.data?.user
 
-      localStorage.setItem('userData', JSON.stringify(userData))
-      localStorage.setItem('accessToken', JSON.stringify(accessToken))
+            localStorage.setItem('accessToken', JSON.stringify(token))
 
-      // Redirect to `to` query if exist or redirect to index route
-      router.replace(route.query.to ? String(route.query.to) : '/')
-
-      return null
+            localStorage.setItem('userData',JSON.stringify(userData))
+            //let userAbilities = {action: "manage", subject: "all"}
+            //localStorage.setItem('userAbilities', JSON.stringify(userAbilities))
+            //ability.update(userAbilities)
+            router.replace(route.query.to ? String(route.query.to) : '/')
+            //router.replace(route.query.to ? String(route.query.to) : '/')
+            console.log(r)
+        }
     })
     .catch(e => {
-      const { errors: formErrors } = e.response.data
-
-      errors.value = formErrors
-      console.error(e.response.data)
+        console.log(e)
     })
 }
 
@@ -73,6 +96,9 @@ const imageVariant = useGenerateImageVariant(
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 
 const isPasswordVisible = ref(false)
+
+
+
 
 const onSubmit = () => {
   refVForm.value?.validate()
@@ -123,12 +149,9 @@ const onSubmit = () => {
             :nodes="themeConfig.app.logo"
             class="mb-6"
           />
-          <h5 class="text-h5 mb-1">
-            Adventure starts here 🚀
-          </h5>
-          <p class="mb-0">
-            Make your app management easy and fun!
-          </p>
+          <h5 class="text-h5 mb-1">Registrations</h5>
+          <span>{{errors?.email?.[0]}}</span>
+          <span>{{errors?.password?.[0]}}</span>
         </VCardText>
 
         <VCardText>
@@ -151,10 +174,12 @@ const onSubmit = () => {
               <VCol cols="12">
                 <AppTextField
                   v-model="email"
-                  :rules="[requiredValidator, emailValidator]"
+                  :rules="[requiredValidator, emailValidator,emailServerError]"
                   label="Email"
                   type="email"
                 />
+
+
               </VCol>
 
               <!-- password -->
