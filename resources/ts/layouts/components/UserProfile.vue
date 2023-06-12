@@ -7,23 +7,24 @@ const router = useRouter()
 const ability = useAppAbility()
 const userData = JSON.parse(localStorage.getItem('userData') || 'null')
 
+import axios from '@axios'
 const logout = () => {
-  // Remove "userData" from localStorage
-  localStorage.removeItem('userData')
+  axios.get<RegisterResponse>('/api/v1/auth/logout', {})
+    .then(r => {
+      localStorage.removeItem('userData')
+      localStorage.removeItem('accessToken')
 
-  // Remove "accessToken" from localStorage
-  localStorage.removeItem('accessToken')
+      router.push('/login')
+        .then(() => {
+          localStorage.removeItem('userAbilities')
+          ability.update(initialAbility)
+       })
 
-  // Redirect to login page
-  router.push('/login')
-    .then(() => {
-      // ℹ️ We had to remove abilities in then block because if we don't nav menu items mutation is visible while redirecting user to login page
-      // Remove "userAbilities" from localStorage
-      localStorage.removeItem('userAbilities')
-
-      // Reset ability to initial ability
-      ability.update(initialAbility)
     })
+    .catch(e => {
+        console.log(e)
+    })
+
 }
 
 const userProfileList = [
