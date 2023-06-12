@@ -32,29 +32,43 @@ const errors = ref<Record<string, string | undefined>>({
 })
 
 const refVForm = ref<VForm>()
-const email = ref('admin@demo.com')
-const password = ref('admin')
+const email = ref('')
+const password = ref('')
 const rememberMe = ref(false)
 
+const emailServerError = ()  => {
+    let error = errors.value.email?.[0];
+    return error ? error : true
+}
+
 const login = () => {
-  axios.post<LoginResponse>('/auth/login', { email: email.value, password: password.value })
-    .then(r => {
-      const { accessToken, userData, userAbilities } = r.data
+  axios.post<LoginResponse>('/api/v1/auth/login', 
+      {
+        email: email.value, 
+        password: password.value 
+      }).then(r => {
+        let respErrors = r?.data?.errors
+        if(respErrors) {
+            errors.value = respErrors
+            refVForm.value?.validate().then(() => {
+                errors.value.email = undefined
+                errors.value.password = undefined
+            })
 
-      localStorage.setItem('userAbilities', JSON.stringify(userAbilities))
-      ability.update(userAbilities)
+        } else {
+            let token = r?.data?.accessToken
+            let userData = r?.data?.user
 
-      localStorage.setItem('userData', JSON.stringify(userData))
-      localStorage.setItem('accessToken', JSON.stringify(accessToken))
+            localStorage.setItem('accessToken', JSON.stringify(token))
 
-      // Redirect to `to` query if exist or redirect to index route
-      router.replace(route.query.to ? String(route.query.to) : '/')
+            localStorage.setItem('userData',JSON.stringify(userData))
+
+            router.replace(route.query.to ? String(route.query.to) : '/')
+        }
     })
     .catch(e => {
-      const { errors: formErrors } = e.response.data
-
-      errors.value = formErrors
-      console.error(e.response.data)
+       
+      console.log(e)
     })
 }
 
@@ -109,24 +123,10 @@ const onSubmit = () => {
           />
 
           <h5 class="text-h5 mb-1">
-            Welcome to <span class="text-capitalize"> {{ themeConfig.app.title }} </span>! 👋🏻
+              Login
           </h5>
-          <p class="mb-0">
-            Please sign-in to your account and start the adventure
-          </p>
         </VCardText>
         <VCardText>
-          <VAlert
-            color="primary"
-            variant="tonal"
-          >
-            <p class="text-caption mb-2">
-              Admin Email: <strong>admin@demo.com</strong> / Pass: <strong>admin</strong>
-            </p>
-            <p class="text-caption mb-0">
-              Client Email: <strong>client@demo.com</strong> / Pass: <strong>client</strong>
-            </p>
-          </VAlert>
         </VCardText>
         <VCardText>
           <VForm
@@ -141,8 +141,7 @@ const onSubmit = () => {
                   label="Email"
                   type="email"
                   autofocus
-                  :rules="[requiredValidator, emailValidator]"
-                  :error-messages="errors.email"
+                  :rules="[requiredValidator, emailValidator,emailServerError]"
                 />
               </VCol>
 

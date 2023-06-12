@@ -117,35 +117,35 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
   >
     <!-- 👉 Search Trigger button -->
     <!-- close active tour while opening search bar using icon -->
-    <IconBtn
-      class="me-1"
-      @click="Shepherd.activeTour?.cancel()"
-    >
-      <VIcon
-        size="26"
-        icon="tabler-search"
-      />
-    </IconBtn>
+    <!-- <IconBtn -->
+    <!--   class="me-1" -->
+    <!--   @click="Shepherd.activeTour?.cancel()" -->
+    <!-- > -->
+    <!--   <VIcon -->
+    <!--     size="26" -->
+    <!--     icon="tabler-search" -->
+    <!--   /> -->
+    <!-- </IconBtn> -->
 
-    <span
-      v-if="appContentLayoutNav === 'vertical'"
-      class="d-none d-md-flex align-center text-disabled"
-      @click="Shepherd.activeTour?.cancel()"
-    >
-      <span class="me-3">Search</span>
-      <span class="meta-key">&#8984;K</span>
-    </span>
+    <!-- <span -->
+    <!--   v-if="appContentLayoutNav === 'vertical'" -->
+    <!--   class="d-none d-md-flex align-center text-disabled" -->
+    <!--   @click="Shepherd.activeTour?.cancel()" -->
+    <!-- > -->
+    <!--   <span class="me-3">Search</span> -->
+    <!--   <span class="meta-key">&#8984;K</span> -->
+    <!-- </span> -->
   </div>
 
   <!-- 👉 App Bar Search -->
-  <LazyAppBarSearch
-    v-model:isDialogVisible="isAppSearchBarVisible"
-    v-model:search-query="searchQuery"
-    :search-results="searchResult"
-    :suggestions="suggestionGroups"
-    :no-data-suggestion="noDataSuggestions"
-    @item-selected="redirectToSuggestedOrSearchedPage"
-  >
+  <!-- <LazyAppBarSearch -->
+  <!--   v-model:isDialogVisible="isAppSearchBarVisible" -->
+  <!--   v-model:search-query="searchQuery" -->
+  <!--   :search-results="searchResult" -->
+  <!--   :suggestions="suggestionGroups" -->
+  <!--   :no-data-suggestion="noDataSuggestions" -->
+  <!--   @item-selected="redirectToSuggestedOrSearchedPage" -->
+  <!-- > -->
     <!--
       <template #suggestions>
       use this slot if you want to override default suggestions
@@ -163,7 +163,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import('@core/components/App
       use this slot to change the search item
       </template>
     -->
-  </LazyAppBarSearch>
+  <!-- </LazyAppBarSearch> -->
 </template>
 
 <style lang="scss" scoped>

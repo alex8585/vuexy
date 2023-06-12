@@ -83,7 +83,6 @@ const handleDrawerModelValueUpdate = (val: boolean) => {
 const onSubmit = () => {
   refForm.value?.validate().then(({ valid }) => {
     if (valid) {
-      console.log(form.value);
       emit("submit", form.value);
       emit("update:isDrawerOpen", false);
       nextTick(() => {

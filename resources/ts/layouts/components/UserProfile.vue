@@ -100,7 +100,7 @@ const userProfileList = [
             </template>
 
             <VListItemTitle class="font-weight-medium">
-              {{ userData.fullName || userData.username }}
+              {{ userData.fullName || userData.name }}
             </VListItemTitle>
             <VListItemSubtitle>{{ userData.role }}</VListItemSubtitle>
           </VListItem>

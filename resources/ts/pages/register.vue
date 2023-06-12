@@ -17,9 +17,9 @@ import { themeConfig } from '@themeConfig'
 import { alphaDashValidator, emailValidator, requiredValidator } from '@validators'
 
 const refVForm = ref<VForm>()
-const username = ref('johnDoe')
-const email = ref('john@example.com')
-const password = ref('john@VUEXY#123')
+const username = ref('')
+const email = ref('')
+const password = ref('')
 const privacyPolicies = ref(true)
 
 
@@ -37,10 +37,6 @@ const errors = ref<Record<string, string | undefined>>({
   password: null,
 })
 
-onMounted(() => {
-//   localStorage.removeItem('userAbilities')
-//   localStorage.removeItem('accessToken')
-})
 
 const emailServerError = ()  => {
     let error = errors.value.email?.[0];
@@ -55,7 +51,6 @@ const register = () => {
     c_password: password.value,
   })
     .then(r => {
-        //console.log('response >>>', r);
         let respErrors = r?.data?.errors
         if(respErrors) {
             errors.value = respErrors
@@ -65,20 +60,14 @@ const register = () => {
             })
 
         } else {
-         //   errors.value.email = null
-          //  errors.value.password = null
             let token = r?.data?.accessToken
             let userData = r?.data?.user
 
             localStorage.setItem('accessToken', JSON.stringify(token))
 
             localStorage.setItem('userData',JSON.stringify(userData))
-            //let userAbilities = {action: "manage", subject: "all"}
-            //localStorage.setItem('userAbilities', JSON.stringify(userAbilities))
-            //ability.update(userAbilities)
+
             router.replace(route.query.to ? String(route.query.to) : '/')
-            //router.replace(route.query.to ? String(route.query.to) : '/')
-            console.log(r)
         }
     })
     .catch(e => {

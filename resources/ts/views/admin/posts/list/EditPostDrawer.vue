@@ -68,7 +68,6 @@ const setRow = () => {
     return
   }
 
-  console.log(props.row)
   let tags = []
   if (props.row.tags) {
       for (const tag of props.row.tags as Array<TagType>) {

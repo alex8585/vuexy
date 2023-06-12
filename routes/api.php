@@ -26,9 +26,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::prefix('v1')->group(function() {
 
-  Route::prefix((function() {
-      return '';
-    })())->group(function() {
 
         Route::group(['prefix' => 'auth'], function () {
             Route::post('login', [AuthController::class, 'login']);
@@ -40,13 +37,12 @@ Route::prefix('v1')->group(function() {
             });
         });
 
-        //'auth:api'
-        Route::middleware(['api', ])->group(function () {
+        //'auth:api' 'auth:sanctum'
+        Route::middleware(['api', 'auth:sanctum'])->group(function () {
             Route::apiResource('posts', PostController::class);
             Route::apiResource('categories', CategoryController::class);
             Route::apiResource('tags', TagController::class);
             Route::apiResource('users', UserController::class);
         });
-    });
 
 });

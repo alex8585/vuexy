@@ -63,7 +63,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 401);
+            return response()->json(['errors' => $validator->errors()], 201);
         }
 
 
@@ -71,8 +71,10 @@ class AuthController extends Controller
         $credentials = request(['email', 'password']);
         if (!Auth::attempt($credentials)) {
             return response()->json([
-                'message' => 'Unauthorized'
-            ], 401);
+                'errors'=>[ 
+                    'email' => ['Login or password is incorrect']
+                ]
+            ], 201);
         }
 
         $user = $request->user();

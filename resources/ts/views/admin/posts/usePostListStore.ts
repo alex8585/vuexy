@@ -54,7 +54,6 @@ export const usePostListStore = function (baseUrl: string) {
 
         this._loading = true;
         let res = await axios.get(baseUrl, { params });
-        console.log(res)
         this._items = res.data.data;
         this._meta = res.data.metaData;
         this._loading = false;

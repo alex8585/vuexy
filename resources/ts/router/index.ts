@@ -12,7 +12,7 @@ const router = createRouter({
     {
       path: '/',
       redirect: to => {
-        return { name: 'dashboards-analytics' }
+        return { name: 'admin-posts-list' }
       }
 
       // redirect: to => {
@@ -68,10 +68,10 @@ router.beforeEach(to => {
     //console.log(isLoggedIn);
     if(!isLoggedIn) {
         if(to.path != '/login' && to.path != '/register') {
-            return { name: 'login' }
+           return { name: 'login' }
         }
     }else if(to.path == '/login' || to.path == '/register') {
-        return { name: 'dashboards-analytics' }
+        return { name: 'admin-posts-list' }
     }
 })
 
